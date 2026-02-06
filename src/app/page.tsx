@@ -1,65 +1,114 @@
-import Image from "next/image";
+import ContentContainer from "@/components/Layout/ContentContainer";
+import ArticleCard from "@/components/Article/ArticleCard";
+import Link from "next/link";
+import connectDB from "@/lib/mongodb";
+import Article from "@/lib/models/Article";
 
-export default function Home() {
+interface ArticleData {
+  _id: string;
+  title: string;
+  slug: string;
+  publishedDate: string;
+}
+
+async function getLatestArticles(): Promise<{ articles: ArticleData[]; total: number }> {
+  try {
+    await connectDB();
+    
+    // Get published articles, sorted by published date (newest first)
+    const articles = await Article.find({ isPublished: true })
+      .sort({ publishedDate: -1 })
+      .limit(5)
+      .select('title slug publishedDate')
+      .lean();
+    
+    // Get total count
+    const total = await Article.countDocuments({ isPublished: true });
+    
+    // Convert to plain objects with string dates
+    const serializedArticles = articles.map(article => ({
+      _id: article._id.toString(),
+      title: article.title,
+      slug: article.slug,
+      publishedDate: article.publishedDate.toISOString()
+    }));
+    
+    return { articles: serializedArticles, total };
+  } catch (error) {
+    console.error('Error fetching articles:', error);
+    return { articles: [], total: 0 };
+  }
+}
+
+export default async function Home() {
+  const { articles, total } = await getLatestArticles();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
+    <ContentContainer>
+      <div className="py-8">
+        <h3 className="text-2xl font-bold mb-6">Hi, I&apos;m Parmeet 👋</h3>
+        
+        <p className="text-gray-200 mb-8 leading-relaxed">
+          I&apos;m on a journey to become a better version of myself.
+          <br />
+          You&apos;ll often find me swimming, playing cricket, or hitting the tennis court.
+          <br />
+          Yes, I&apos;m a full-time Sports enthusiast and a part-time Software Engineer who believes in consistent progress and lifelong learning.
+          <br /><br/>
+          I started this blog to document my journey, keep myself accountable, and—if I&apos;m lucky—inspire someone along the way.
+          <br />
+          Welcome to my little corner of the internet, and thanks for stopping by.
+        </p>
+        
+        <div className="flex space-x-4 mb-8">
+          <a 
+            href="https://x.com/parmeet9891" 
+            target="_blank" 
             rel="noopener noreferrer"
+            className="social-button"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+            X
           </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
+          <a 
+            href="https://github.com/parmeet9891" 
+            target="_blank" 
             rel="noopener noreferrer"
+            className="social-button"
           >
-            Documentation
+            GitHub
           </a>
         </div>
-      </main>
-    </div>
+        
+        <hr className="border-gray-700 mb-8" />
+        
+        <div>
+          <h4 className="text-xl font-semibold mb-4">Latest Articles</h4>
+          {articles.length > 0 ? (
+            <div className="space-y-4">
+              {articles.map((article) => (
+                <ArticleCard
+                  key={article._id}
+                  title={article.title}
+                  slug={article.slug}
+                  publishedDate={article.publishedDate}
+                />
+              ))}
+              {total > 5 && (
+                <div className="mt-6">
+                  <Link 
+                    href="/blog" 
+                    className="text-blue-400 hover:text-blue-300 underline"
+                  >
+                    View all articles
+                  </Link>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-gray-400">No articles yet. Check back soon!</p>
+          )}
+        </div>
+      </div>
+    </ContentContainer>
   );
 }

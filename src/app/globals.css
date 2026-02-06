@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
+/* Dark theme global styles */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -12,15 +13,101 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Content container styling */
+.content-container {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  background: #000000;
+}
+
+.social-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #374151;
+  color: #ffffff;
+  text-decoration: none;
+  display: inline-block;
+  transition: border-color 0.2s;
+}
+
+.social-button:hover {
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+
+.article-card {
+  padding: 1rem;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.article-card:hover {
+  border-color: #4b5563;
+}
+
+/* Markdown content styling */
+.markdown-content {
+  color: #e5e7eb;
+  line-height: 1.7;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  color: #ffffff;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-content p {
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.markdown-content a {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+.markdown-content a:hover {
+  color: #93c5fd;
+}
+
+.markdown-content code {
+  background-color: #1f2937;
+  color: #d1d5db;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono);
+}
+
+.markdown-content pre {
+  background-color: #111827;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #4b5563;
+  padding-left: 1rem;
+  color: #d1d5db;
+  margin: 1rem 0;
 }
