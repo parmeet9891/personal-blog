@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: "All articles from Parmeet's personal blog documenting his journey of self-improvement and experiences",
 };
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 interface ArticleData {
   _id: string;
   title: string;

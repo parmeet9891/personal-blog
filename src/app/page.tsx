@@ -11,6 +11,8 @@ interface ArticleData {
   publishedDate: string;
 }
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 async function getLatestArticles(): Promise<{ articles: ArticleData[]; total: number }> {
   try {
     await connectDB();

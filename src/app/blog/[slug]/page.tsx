@@ -6,6 +6,8 @@ import Article from "@/lib/models/Article";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 interface ArticleData {
   _id: string;
   title: string;
